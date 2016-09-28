@@ -11,6 +11,19 @@ project.lock.json
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
+# Temporary Files
+*.stackdump
+
+# Tools
+tools/**/*
+!tools/packages.config
+!tools/nuget.config
+!tools/*.ps1
+
+# Packaging
+artifacts
+*.nupkg
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/

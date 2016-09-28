@@ -1,5 +1,5 @@
-xUnit Autofac
-=============
+xUnit Autofac  [![Build Master](https://ci.appveyor.com/api/projects/status/mqvl7dyo0auimouw/branch/master?svg=true)](https://ci.appveyor.com/project/dennisroche/xunit-ioc-autofac) [![NuGet Version](http://img.shields.io/nuget/v/xunit-ioc-autofac.svg?style=flat)](https://www.nuget.org/packages/xunit-ioc-autofac/)
+================
 
 Use AutoFac to resolve xUnit test cases.
 
