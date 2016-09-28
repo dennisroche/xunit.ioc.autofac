@@ -1,0 +1,13 @@
+# Set the default behavior, in case people don't have core.autocrlf set
+* text=auto eol=crlf
+
+# Markdown is text-based markup language
+*.md text diff
+
+# These files are truly binary and should not be modified by git
+*.png binary
+*.jpg binary
+*.gif binary
+*.exe binary
+*.dll binary
+*.lnk binary
