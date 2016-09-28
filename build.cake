@@ -3,7 +3,7 @@
 #addin "Cake.FileHelpers"
 #tool "nuget:?package=GitVersion.CommandLine"
 
-var project = "./src/xunit.ioc.autofac/project.json";
+var project = "./src/xunit2.ioc.autofac/project.json";
 
 var target = Argument("Target", "Default");
 var configuration = Argument("Configuration", "Release");

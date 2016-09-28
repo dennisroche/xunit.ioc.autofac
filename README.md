@@ -1,4 +1,4 @@
-xUnit Autofac  [![Build Master](https://ci.appveyor.com/api/projects/status/mqvl7dyo0auimouw/branch/master?svg=true)](https://ci.appveyor.com/project/dennisroche/xunit-ioc-autofac) [![NuGet Version](http://img.shields.io/nuget/v/xunit-ioc-autofac.svg?style=flat)](https://www.nuget.org/packages/xunit-ioc-autofac/)
+xUnit Autofac  [![Build Master](https://ci.appveyor.com/api/projects/status/mqvl7dyo0auimouw/branch/master?svg=true)](https://ci.appveyor.com/project/dennisroche/xunit-ioc-autofac) [![NuGet Version](http://img.shields.io/nuget/v/xunit2.ioc.autofac.svg?style=flat)](https://www.nuget.org/packages/xunit2.ioc.autofac/)
 ================
 
 Use AutoFac to resolve xUnit test cases.
@@ -6,9 +6,9 @@ Use AutoFac to resolve xUnit test cases.
 How to use
 =============
 
-Install the [Nuget](https://www.nuget.org/packages/xunit-ioc-autofac) package.
+Install the [Nuget](https://www.nuget.org/packages/xunit2.ioc.autofac) package.
 
-    Install-Package xunit-ioc-autofac
+    Install-Package xunit2.ioc.autofac
 
 In your testing project, add the following framework
 
