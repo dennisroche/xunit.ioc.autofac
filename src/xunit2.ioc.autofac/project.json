@@ -1,7 +1,7 @@
 {
   "title": "xunit2.ioc.autofac",
   "description": "Using Autofac to resolve dependencies in xUnit2 tests",
-  "version": "1.0.0",
+  "version": "0.1.0-*",
   "authors": [
     "dennisroche"
   ],
