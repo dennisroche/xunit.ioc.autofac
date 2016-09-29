@@ -27,6 +27,11 @@
         "NETStandard.Library": "1.6.0"
       }
     },
-    "net452": {}
+    "net452": {
+      "frameworkAssemblies": {
+        "System.Runtime": "4.0.10.0",
+        "System.Threading.Tasks": "4.0.0.0"
+      }
+    }
   }
 }
