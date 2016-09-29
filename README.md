@@ -19,20 +19,50 @@ namespace Your.Test.Project
 {
     public class ConfigureTestFramework : AutofacTestFramework
     {
+        private const string TestSuffixConvention = "Tests";
+
         public ConfigureTestFramework(IMessageSink diagnosticMessageSink)
             : base(diagnosticMessageSink)
         {
             var builder = new ContainerBuilder();
-            // configure your container
-            // e.g. builder.RegisterModule<TestOverrideModule>();
+            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+                .Where(t => t.Name.EndsWith(TestSuffixConvention));
 
             builder.Register(context => new TestOutputHelper())
                 .As<ITestOutputHelper>()
-                .InstancePerDependency();
+                .InstancePerLifetimeScope();
+
+            // configure your container
+            // e.g. builder.RegisterModule<TestOverrideModule>();
 
             Container = builder.Build();
         }
     }
+}
+```
+
+Example test `class`.
+
+```cs
+[UseAutofacTestFramework]
+public class MyAwesomeTests
+{
+    public MyAwesomeTests()
+    {
+    }
+
+    public MyAwesomeTests(ITestOutputHelper outputHelper)
+    {
+        _outputHelper = outputHelper;
+    }
+
+    [Fact]
+    public void AssertThatWeDoStuff()
+    {
+        _outputHelper.WriteLine("Hello");
+    }
+
+    private readonly ITestOutputHelper _outputHelper;
 }
 ```
 
