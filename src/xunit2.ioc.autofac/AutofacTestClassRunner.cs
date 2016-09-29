@@ -20,11 +20,7 @@ namespace Xunit.Ioc.Autofac
 
         protected override bool TryGetConstructorArgument(ConstructorInfo constructor, int index, ParameterInfo parameter, out object argumentValue)
         {
-            if (parameter.ParameterType != typeof(ITestOutputHelper))
-                return _scope.TryResolve(parameter.ParameterType, out argumentValue);
-
-            argumentValue = new TestOutputHelper();
-            return true;
+            return _scope.TryResolve(parameter.ParameterType, out argumentValue);
         }
 
         protected override Task BeforeTestClassFinishedAsync()

@@ -26,6 +26,10 @@ namespace Your.Test.Project
             // configure your container
             // e.g. builder.RegisterModule<TestOverrideModule>();
 
+            builder.Register(context => new TestOutputHelper())
+                .As<ITestOutputHelper>()
+                .InstancePerDependency();
+
             Container = builder.Build();
         }
     }
