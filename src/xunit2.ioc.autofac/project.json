@@ -20,11 +20,6 @@
     "tags": [ "xunit", "autofac" ]
   },
 
-  "System.Runtime": {
-    "type": "build",
-    "version": ""
-  },
-
   "frameworks": {
     "netstandard1.6": {
       "imports": "dnxcore50",
@@ -34,8 +29,14 @@
     },
     "net452": {
       "frameworkAssemblies": {
-        "System.Runtime": "4.0.10.0",
-        "System.Threading.Tasks": "4.0.0.0"
+        "System.Runtime": {
+          "type": "build",
+          "version": ""
+        },
+        "System.Threading.Tasks": {
+          "type": "build",
+          "version": ""
+        }
       }
     }
   }
