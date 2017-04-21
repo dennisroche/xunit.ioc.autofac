@@ -29,6 +29,7 @@ namespace Your.Test.Project
                 .Where(t => t.Name.EndsWith(TestSuffixConvention));
 
             builder.Register(context => new TestOutputHelper())
+				.AsSelf()
                 .As<ITestOutputHelper>()
                 .InstancePerLifetimeScope();
 
