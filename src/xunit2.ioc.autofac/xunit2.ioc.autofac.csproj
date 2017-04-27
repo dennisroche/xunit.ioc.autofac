@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Using Autofac to resolve dependencies in xUnit2 tests</Description>
+    <AssemblyTitle>xunit2.ioc.autofac</AssemblyTitle>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <Authors>dennisroche</Authors>
+    <TargetFrameworks>netstandard1.6;net452</TargetFrameworks>
+    <AssemblyName>xunit2.ioc.autofac</AssemblyName>
+    <PackageId>xunit2.ioc.autofac</PackageId>
+    <PackageTags>xunit;autofac</PackageTags>
+    <PackageLicenseUrl>http://www.opensource.org/licenses/MIT</PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/dennisroche/xunit.ioc.autofac</RepositoryUrl>
+    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.0</NetStandardImplicitPackageVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="4.5.0" />
+    <PackageReference Include="xunit" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net452' ">
+    <Reference Include="System.Runtime" />
+    <Reference Include="System.Threading.Tasks" />
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+</Project>

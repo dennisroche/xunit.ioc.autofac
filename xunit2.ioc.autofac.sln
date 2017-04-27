@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "xunit2.ioc.autofac", "src\xunit2.ioc.autofac\xunit2.ioc.autofac.xproj", "{3D7BB489-089A-4400-B6AF-CC6CA6930799}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "xunit2.ioc.autofac", "src\xunit2.ioc.autofac\xunit2.ioc.autofac.csproj", "{3D7BB489-089A-4400-B6AF-CC6CA6930799}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
