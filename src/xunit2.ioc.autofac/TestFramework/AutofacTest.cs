@@ -1,18 +1,16 @@
-using Xunit.Abstractions;
+using Autofac;
+using Xunit.Sdk;
 
 namespace Xunit.Ioc.Autofac.TestFramework
 {
-    public class AutofacTest : LongLivedMarshalByRefObject, ITest
+    public class AutofacTest : XunitTest
     {
-        public AutofacTest(AutofacTestCase testCase, string displayName)
+        public AutofacTest(ILifetimeScope lifetimeScope, IXunitTestCase testCase, string displayName)
+            : base(testCase, displayName)
         {
-            TestCase = testCase;
-            DisplayName = displayName;
+            LifetimeScope = lifetimeScope;
         }
 
-        public string DisplayName { get; }
-        public AutofacTestCase TestCase { get; }
-
-        ITestCase ITest.TestCase => TestCase;
+        public ILifetimeScope LifetimeScope { get; }
     }
 }

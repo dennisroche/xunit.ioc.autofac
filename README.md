@@ -19,24 +19,23 @@ namespace Your.Test.Project
 {
     public class ConfigureTestFramework : AutofacTestFramework
     {
-        private const string TestSuffixConvention = "Tests";
-
         public ConfigureTestFramework(IMessageSink diagnosticMessageSink)
             : base(diagnosticMessageSink)
         {
-            var builder = new ContainerBuilder();
-            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-                .Where(t => t.Name.EndsWith(TestSuffixConvention));
+        }
 
-            builder.Register(context => new TestOutputHelper())
-                .AsSelf()
-                .As<ITestOutputHelper>()
-                .InstancePerLifetimeScope();
+        protected override void ConfigureContainer(ContainerBuilder builder)
+        {
+            builder.RegisterType<CurrentTestInfo>().As<ICurrentTestInfo>().InstancePerTest();
+            builder.RegisterType<CurrentTestClassInfo>().As<ICurrentTestClassInfo>().InstancePerTestClass();
+            builder.RegisterType<CurrentTestCollectionInfo>().As<ICurrentTestCollectionInfo>().InstancePerTestCollection();
+
+            builder.RegisterSource(new NSubstituteRegistrationSource()); // https://gist.github.com/dabide/57c5279894383d8f0ee4ed2069773907
+
+            builder.RegisterType<Foo>().As<IFoo>();
 
             // configure your container
             // e.g. builder.RegisterModule<TestOverrideModule>();
-
-            Container = builder.Build();
         }
     }
 }
@@ -45,25 +44,85 @@ namespace Your.Test.Project
 Example test `class`.
 
 ```cs
-[UseAutofacTestFramework]
+[UseAutofacTestFramework] // Without this attribute, the test class will be handled by the standard xUnit test runners
 public class MyAwesomeTests
 {
-    public MyAwesomeTests()
+    public MyAwesomeTests(IFoo foo)
     {
-    }
-
-    public MyAwesomeTests(ITestOutputHelper outputHelper)
-    {
-        _outputHelper = outputHelper;
+        _foo = foo;
     }
 
     [Fact]
     public void AssertThatWeDoStuff()
     {
-        _outputHelper.WriteLine("Hello");
+        Console.WriteLine(_foo.Bar);
     }
 
     private readonly ITestOutputHelper _outputHelper;
+}
+
+public interface IFoo
+{
+    Guid Bar { get; }
+}
+
+public class Foo : IFoo
+{
+    public Guid Bar { get; } = Guid.NewGuid();
+}
+```
+
+`ICollectionFixture<T>` and `IClassFixture<T>` are also supported, together with `INeedModule<T>`. (The latter specifies Autofac modules to be loaded when the lifetime scope is created.) This enables very elegant solutions:
+
+```cs
+[UseAutofacTestFramework]
+public class MyEvenMoreAwesomeTests : IUseInMemoryDb
+{
+    public MyEvenMoreAwesomeTests(IDbConnectionFactory dbConnectionFactory)
+    {
+        _dbConnectionFactory = dbConnectionFactory;
+    }
+
+    [Fact]
+    public void AssertThatWeDoEvenMoreStuff()
+    {
+        using (IDbConnection db = _dbConnectionFactory.Open())
+        {
+            db.CreateTableIfNotExists<Foo>();
+            // ... and so on
+        }
+    }
+
+    private readonly IDbConnectionFactory _dbConnectionFactory;
+}
+
+public interface IUseInMemoryDb : IClassFixture<MemoryDatabaseClassFixture>, INeedModule<MemoryDatabaseFixtureModule>
+{
+}
+
+public class MemoryDatabaseClassFixture : IDisposable
+{
+    private readonly IDbConnection _db;
+
+    public MemoryDatabaseClassFixture(IDbConnectionFactory dbConnectionFactory)
+    {
+        // Keep the in-memory database alive
+        _db = dbConnectionFactory.Open();
+    }
+
+    public void Dispose()
+    {
+        // Now it can rest in peace
+        _db?.Dispose();
+    }
+}
+
+public class MemoryDatabaseFixtureModule : Module
+{
+    protected override void Load(ContainerBuilder builder)
+    {
+        builder.Register(c => new OrmLiteConnectionFactory(":memory:", SqliteDialect.Provider)).As<IDbConnectionFactory>().SingleInstance();
+    }
 }
 ```
 
