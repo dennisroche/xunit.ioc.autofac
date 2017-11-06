@@ -13,12 +13,13 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/dennisroche/xunit.ioc.autofac</RepositoryUrl>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
-    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.0</NetStandardImplicitPackageVersion>
+    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.1</NetStandardImplicitPackageVersion>
+    <RootNamespace>Xunit.Ioc.Autofac</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="4.5.0" />
-    <PackageReference Include="xunit" Version="2.2.0" />
+    <PackageReference Include="Autofac" Version="4.6.2" />
+    <PackageReference Include="xunit.extensibility.execution" Version="2.3.0" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net452' ">

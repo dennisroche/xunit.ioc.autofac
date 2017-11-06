@@ -7,26 +7,34 @@ using Xunit.Sdk;
 
 namespace Xunit.Ioc.Autofac.TestFramework
 {
-    public class AutofacTestAssemblyRunner : TestAssemblyRunner<AutofacTestCase>
+    public class AutofacTestAssemblyRunner : XunitTestAssemblyRunner
     {
-        public AutofacTestAssemblyRunner(IContainer container, ITestAssembly testAssembly, IEnumerable<AutofacTestCase> testCases, IMessageSink diagnosticMessageSink, IMessageSink executionMessageSink,
-            ITestFrameworkExecutionOptions executionOptions)
+        private readonly IContainer _container;
+
+        public AutofacTestAssemblyRunner(IContainer container,
+                                         ITestAssembly testAssembly,
+                                         IEnumerable<IXunitTestCase> testCases,
+                                         IMessageSink diagnosticMessageSink,
+                                         IMessageSink executionMessageSink,
+                                         ITestFrameworkExecutionOptions executionOptions)
             : base(testAssembly, testCases, diagnosticMessageSink, executionMessageSink, executionOptions)
         {
             _container = container;
         }
 
-        protected override string GetTestFrameworkDisplayName()
-        {
-            return "Autofac Test Framework";
-        }
+        protected override string GetTestFrameworkDisplayName() => "Autofac Test Framework";
 
-        protected override Task<RunSummary> RunTestCollectionAsync(IMessageBus messageBus, ITestCollection testCollection, IEnumerable<AutofacTestCase> testCases, CancellationTokenSource cancellationTokenSource)
+        protected override async Task<RunSummary> RunTestCollectionAsync(IMessageBus messageBus,
+                                                                         ITestCollection testCollection,
+                                                                         IEnumerable<IXunitTestCase> testCases,
+                                                                         CancellationTokenSource cancellationTokenSource)
         {
-            return new AutofacTestCollectionRunner(_container, testCollection, testCases, DiagnosticMessageSink, messageBus, TestCaseOrderer, new ExceptionAggregator(Aggregator), cancellationTokenSource)
-                .RunAsync();
+            using (var testCollectionLifetimeScope =
+                _container.BeginLifetimeScope(AutofacTestScopes.TestCollection, builder => builder.RegisterCollectionFixturesAndModules(testCollection)))
+            {
+                return await new AutofacTestCollectionRunner(testCollectionLifetimeScope, testCollection, testCases, DiagnosticMessageSink, messageBus,
+                                                             TestCaseOrderer, new ExceptionAggregator(Aggregator), cancellationTokenSource).RunAsync();
+            }
         }
-
-        private readonly IContainer _container;
     }
 }

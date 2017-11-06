@@ -1,52 +1,46 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 using Autofac;
 using Xunit.Abstractions;
-using Xunit.Ioc.Autofac.TestFramework;
 using Xunit.Sdk;
 
 namespace Xunit.Ioc.Autofac
 {
-    public class AutofacTestInvoker : TestInvoker<AutofacTestCase>
+    public class AutofacTestInvoker : XunitTestInvoker
     {
-        public const string TestLifetimeScopeTag = "TestLifetime";
+        private readonly ILifetimeScope _testLifetimeScope;
 
-        public AutofacTestInvoker(ILifetimeScope container, ITest test, IMessageBus messageBus, Type testClass, object[] constructorArguments, MethodInfo testMethod, object[] testMethodArguments, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource) 
-            : base(test, messageBus, testClass, constructorArguments, testMethod, testMethodArguments, aggregator, cancellationTokenSource)
+        public AutofacTestInvoker(ILifetimeScope testLifetimeScope,
+                                  ITest test,
+                                  IMessageBus messageBus,
+                                  Type testClass,
+                                  object[] constructorArguments,
+                                  MethodInfo testMethod,
+                                  object[] testMethodArguments,
+                                  IReadOnlyList<BeforeAfterTestAttribute> beforeAfterAttributes,
+                                  ExceptionAggregator aggregator,
+                                  CancellationTokenSource cancellationTokenSource)
+            : base(test, messageBus, testClass, constructorArguments, testMethod, testMethodArguments, beforeAfterAttributes, aggregator,
+                   cancellationTokenSource)
         {
-            _lifetimeScope = container.BeginLifetimeScope(TestLifetimeScopeTag);
-            _testOutputHelper = _lifetimeScope.Resolve<TestOutputHelper>();
-        }
-
-        public string Output { get; set; }
-
-        protected override Task BeforeTestMethodInvokedAsync()
-        {
-            _testOutputHelper?.Initialize(MessageBus, Test);
-
-            return base.BeforeTestMethodInvokedAsync();
-        }
-
-        protected override Task AfterTestMethodInvokedAsync()
-        {
-            if (_testOutputHelper != null)
-            {
-                Output = _testOutputHelper.Output;
-                _testOutputHelper.Uninitialize();
-            }
-
-            _lifetimeScope?.Dispose();
-            return base.AfterTestMethodInvokedAsync();
+            _testLifetimeScope = testLifetimeScope;
         }
 
         protected override object CreateTestClass()
         {
-            return _lifetimeScope.Resolve(TestClass);
-        }
+            object testClass = null;
 
-        private readonly ILifetimeScope _lifetimeScope;
-        private readonly TestOutputHelper _testOutputHelper;
+            if (!TestMethod.IsStatic && !Aggregator.HasExceptions)
+            {
+                if (!MessageBus.QueueMessage(new TestClassConstructionStarting(Test))) CancellationTokenSource.Cancel();
+
+                try { if (!CancellationTokenSource.IsCancellationRequested) Timer.Aggregate(() => testClass = _testLifetimeScope.Resolve(TestClass)); }
+                finally { if (!MessageBus.QueueMessage(new TestClassConstructionFinished(Test))) CancellationTokenSource.Cancel(); }
+            }
+
+            return testClass;
+        }
     }
 }

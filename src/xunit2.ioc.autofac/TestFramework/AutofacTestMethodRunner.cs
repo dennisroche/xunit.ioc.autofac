@@ -7,21 +7,33 @@ using Xunit.Sdk;
 
 namespace Xunit.Ioc.Autofac.TestFramework
 {
-    public class AutofacTestMethodRunner : TestMethodRunner<AutofacTestCase>
+    public class AutofacTestMethodRunner : XunitTestMethodRunner
     {
-        public AutofacTestMethodRunner(IContainer container, IMessageSink diagnosticMessageSink, ITestMethod testMethod, IReflectionTypeInfo @class, IReflectionMethodInfo method, IEnumerable<AutofacTestCase> testCases, IMessageBus messageBus, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource) 
-            : base(testMethod, @class, method, testCases, messageBus, aggregator, cancellationTokenSource)
+        private readonly IMessageSink _diagnosticMessageSink;
+
+        private readonly ILifetimeScope _testClassLifetimeScope;
+
+        public AutofacTestMethodRunner(ILifetimeScope testClassLifetimeScope,
+                                       IMessageSink diagnosticMessageSink,
+                                       ITestMethod testMethod,
+                                       IReflectionTypeInfo @class,
+                                       IReflectionMethodInfo method,
+                                       IEnumerable<IXunitTestCase> testCases,
+                                       IMessageBus messageBus,
+                                       ExceptionAggregator aggregator,
+                                       CancellationTokenSource cancellationTokenSource,
+                                       object[] constructorArguments)
+            : base(testMethod, @class, method, testCases, diagnosticMessageSink, messageBus, aggregator, cancellationTokenSource, constructorArguments)
         {
-            _container = container;
+            _testClassLifetimeScope = testClassLifetimeScope;
             _diagnosticMessageSink = diagnosticMessageSink;
         }
 
-        protected override Task<RunSummary> RunTestCaseAsync(AutofacTestCase testCase)
+        protected override async Task<RunSummary> RunTestCaseAsync(IXunitTestCase testCase)
         {
-            return testCase.RunAsync(_container, _diagnosticMessageSink, MessageBus, Aggregator, CancellationTokenSource);
-        }
+            if (testCase is AutofacTestCase autofacTestCase) autofacTestCase.TestClassLifetimeScope = _testClassLifetimeScope;
 
-        private readonly IContainer _container;
-        private readonly IMessageSink _diagnosticMessageSink;
+            return await testCase.RunAsync(_diagnosticMessageSink, MessageBus, new object[] { }, Aggregator, CancellationTokenSource);
+        }
     }
 }

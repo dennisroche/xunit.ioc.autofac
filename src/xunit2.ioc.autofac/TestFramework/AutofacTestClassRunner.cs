@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,20 +8,38 @@ using Xunit.Sdk;
 
 namespace Xunit.Ioc.Autofac.TestFramework
 {
-    public class AutofacTestClassRunner : TestClassRunner<AutofacTestCase>
+    public class AutofacTestClassRunner : XunitTestClassRunner
     {
-        private readonly IContainer _container;
+        private readonly ILifetimeScope _testClassLifetimeScope;
 
-        public AutofacTestClassRunner(IContainer container, ITestClass testClass, IReflectionTypeInfo @class, IEnumerable<AutofacTestCase> testCases, IMessageSink diagnosticMessageSink, IMessageBus messageBus, ITestCaseOrderer testCaseOrderer, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource) 
-            : base(testClass, @class, testCases, diagnosticMessageSink, messageBus, testCaseOrderer, aggregator, cancellationTokenSource)
+        public AutofacTestClassRunner(ILifetimeScope testClassLifetimeScope,
+                                      ITestClass testClass,
+                                      IReflectionTypeInfo @class,
+                                      IEnumerable<IXunitTestCase> testCases,
+                                      IMessageSink diagnosticMessageSink,
+                                      IMessageBus messageBus,
+                                      ITestCaseOrderer testCaseOrderer,
+                                      ExceptionAggregator aggregator,
+                                      CancellationTokenSource cancellationTokenSource,
+                                      Dictionary<Type, object> collectionFixtureMappings)
+            : base(testClass, @class, testCases, diagnosticMessageSink, messageBus, testCaseOrderer, aggregator, cancellationTokenSource,
+                   collectionFixtureMappings)
         {
-            _container = container;
+            _testClassLifetimeScope = testClassLifetimeScope;
         }
 
-        protected override Task<RunSummary> RunTestMethodAsync(ITestMethod testMethod, IReflectionMethodInfo method, IEnumerable<AutofacTestCase> testCases, object[] constructorArguments)
+        protected override void CreateClassFixture(Type fixtureType)
         {
-            return new AutofacTestMethodRunner(_container, DiagnosticMessageSink, testMethod, Class, method, testCases, MessageBus, new ExceptionAggregator(Aggregator), CancellationTokenSource)
-                .RunAsync();
+            Aggregator.Run(() => { ClassFixtureMappings[fixtureType] = _testClassLifetimeScope.Resolve(fixtureType); });
         }
+
+        protected override async Task<RunSummary> RunTestMethodAsync(ITestMethod testMethod,
+                                                                     IReflectionMethodInfo method,
+                                                                     IEnumerable<IXunitTestCase> testCases,
+                                                                     object[] constructorArguments) =>
+            await new AutofacTestMethodRunner(_testClassLifetimeScope, DiagnosticMessageSink, testMethod, Class, method, testCases, MessageBus,
+                                              new ExceptionAggregator(Aggregator), CancellationTokenSource, constructorArguments).RunAsync();
+
+        protected override object[] CreateTestClassConstructorArguments() => new object[0];
     }
 }

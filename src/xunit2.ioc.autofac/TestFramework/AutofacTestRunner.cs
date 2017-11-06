@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,22 +9,34 @@ using Xunit.Sdk;
 
 namespace Xunit.Ioc.Autofac.TestFramework
 {
-    public class AutofacTestRunner : TestRunner<AutofacTestCase>
+    public class AutofacTestRunner : XunitTestRunner
     {
-        public AutofacTestRunner(IContainer container, ITest test, IMessageBus messageBus, Type testClass, object[] constructorArguments, MethodInfo testMethod, object[] testMethodArguments, string skipReason, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource) 
-            : base(test, messageBus, testClass, constructorArguments, testMethod, testMethodArguments, skipReason, aggregator, cancellationTokenSource)
+        private readonly ILifetimeScope _testClassLifetimeScope;
+
+        public AutofacTestRunner(ILifetimeScope testClassLifetimeScope,
+                                 ITest test,
+                                 IMessageBus messageBus,
+                                 Type testClass,
+                                 object[] constructorArguments,
+                                 MethodInfo testMethod,
+                                 object[] testMethodArguments,
+                                 string skipReason,
+                                 IReadOnlyList<BeforeAfterTestAttribute> beforeAfterAttributes,
+                                 ExceptionAggregator aggregator,
+                                 CancellationTokenSource cancellationTokenSource)
+            : base(test, messageBus, testClass, constructorArguments, testMethod, testMethodArguments, skipReason, beforeAfterAttributes, aggregator,
+                   cancellationTokenSource)
         {
-            _container = container;
+            _testClassLifetimeScope = testClassLifetimeScope;
         }
 
-        protected override async Task<Tuple<decimal, string>> InvokeTestAsync(ExceptionAggregator aggregator)
+        protected override async Task<decimal> InvokeTestMethodAsync(ExceptionAggregator aggregator)
         {
-            var invoker = new AutofacTestInvoker(_container, Test, MessageBus, TestClass, null, TestMethod, null, aggregator, CancellationTokenSource);
-            var duration = await invoker.RunAsync();
-
-            return Tuple.Create(duration, invoker.Output);
+            using (var testLifetimeScope = _testClassLifetimeScope.BeginLifetimeScope(AutofacTestScopes.Test, builder => builder.RegisterModules(TestClass)))
+            {
+                return await new AutofacTestInvoker(testLifetimeScope, Test, MessageBus, TestClass, ConstructorArguments, TestMethod, TestMethodArguments,
+                                                    BeforeAfterAttributes, aggregator, CancellationTokenSource).RunAsync();
+            }
         }
-
-        private readonly IContainer _container;
     }
 }
