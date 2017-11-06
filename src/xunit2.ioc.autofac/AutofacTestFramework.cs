@@ -10,9 +10,7 @@ namespace Xunit.Ioc.Autofac
     {
         protected AutofacTestFramework(IMessageSink diagnosticMessageSink)
             : base(diagnosticMessageSink) { }
-
-        protected virtual string TestSuffixConvention { get; } = "Tests";
-
+        
         protected override ITestFrameworkDiscoverer CreateDiscoverer(IAssemblyInfo assemblyInfo) =>
             new AutofacTestFrameworkDiscoverer(assemblyInfo, SourceInformationProvider, DiagnosticMessageSink);
 

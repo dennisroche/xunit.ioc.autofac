@@ -13,8 +13,8 @@ namespace Xunit.Ioc.Autofac.TestFramework
         [Obsolete("Called by the de-serializer; should only be called by deriving classes for de-serialization purposes")]
         public AutofacTheoryTestCase() { }
 
-        public AutofacTheoryTestCase(IMessageSink diagnosticMessageSink, TestMethodDisplay defaultMethodDisplay, ITestMethod testMethod)
-            : base(diagnosticMessageSink, defaultMethodDisplay, testMethod) { }
+        public AutofacTheoryTestCase(IMessageSink diagnosticMessageSink, TestMethodDisplay defaultMethodDisplay, ITestMethod testMethod, object[] testMethodArguments = null)
+            : base(diagnosticMessageSink, defaultMethodDisplay, testMethod, testMethodArguments) { }
 
         public override Task<RunSummary> RunAsync(IMessageSink diagnosticMessageSink,
                                                   IMessageBus messageBus,
