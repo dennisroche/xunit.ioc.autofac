@@ -14,10 +14,10 @@ namespace Xunit.Ioc.Autofac
         }
 
         protected override ITestFrameworkDiscoverer CreateDiscoverer(IAssemblyInfo assemblyInfo) 
-            => new AutofacTestFrameworkDiscoverer(assemblyInfo, SourceInformationProvider, DiagnosticMessageSink);
+            => Container.Resolve<IAutofacTestFrameworkDiscovererFactory>().Create(assemblyInfo, Container, SourceInformationProvider, DiagnosticMessageSink);
 
         protected override ITestFrameworkExecutor CreateExecutor(AssemblyName assemblyName)
-            => new AutofacTestFrameworkExecutor(assemblyName, Container, SourceInformationProvider, DiagnosticMessageSink);
+            => Container.Resolve<IAutofacTestFrameworkExecutorFactory>().Create(assemblyName, Container, SourceInformationProvider, DiagnosticMessageSink);
 
         protected IContainer Container;
     }

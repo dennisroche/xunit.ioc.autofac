@@ -14,6 +14,10 @@
     <RepositoryUrl>https://github.com/dennisroche/xunit.ioc.autofac</RepositoryUrl>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
     <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.0</NetStandardImplicitPackageVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.1.1</Version>
+    <PackageReleaseNotes>- refactored code to use factories rather than direct new calls on the constructors, to allow for expansion by clients.
+-removed requirement for parameterless constructor</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

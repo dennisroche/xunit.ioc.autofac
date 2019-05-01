@@ -23,7 +23,7 @@ namespace Xunit.Ioc.Autofac.TestFramework
 
         protected override Task<RunSummary> RunTestCollectionAsync(IMessageBus messageBus, ITestCollection testCollection, IEnumerable<AutofacTestCase> testCases, CancellationTokenSource cancellationTokenSource)
         {
-            return new AutofacTestCollectionRunner(_container, testCollection, testCases, DiagnosticMessageSink, messageBus, TestCaseOrderer, new ExceptionAggregator(Aggregator), cancellationTokenSource)
+            return _container.Resolve< IAutofacTestCollectionRunnerFactory>().Create(_container, testCollection, testCases, DiagnosticMessageSink, messageBus, TestCaseOrderer, new ExceptionAggregator(Aggregator), cancellationTokenSource)
                 .RunAsync();
         }
 

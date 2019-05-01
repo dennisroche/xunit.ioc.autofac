@@ -21,7 +21,7 @@ namespace Xunit.Ioc.Autofac.TestFramework
         {
             var exceptionAggregator = new ExceptionAggregator(Aggregator);
 
-            var autofacTestClassRunner = new AutofacTestClassRunner(_container, testClass, reflectionTypeInfo, testCases, 
+            var autofacTestClassRunner = _container.Resolve<IAutofacTestClassRunnerFactory>().Create(_container, testClass, reflectionTypeInfo, testCases, 
                 _diagnosticMessageSink, MessageBus, TestCaseOrderer, exceptionAggregator, 
                 CancellationTokenSource);
 
