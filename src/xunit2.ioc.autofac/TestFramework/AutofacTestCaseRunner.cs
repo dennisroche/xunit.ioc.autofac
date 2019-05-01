@@ -18,9 +18,9 @@ namespace Xunit.Ioc.Autofac.TestFramework
         {
             var testClass = TestCase.TestMethod.TestClass.Class.ToRuntimeType();
             var testMethod = TestCase.TestMethod.Method.ToRuntimeMethod();
-            var test = new AutofacTest(TestCase, _displayName);
+            var test = _container.Resolve<IAutofacTestFactory>().Create(TestCase, _displayName);
 
-            return new AutofacTestRunner(_container, test, MessageBus, testClass, null, testMethod, null, "", Aggregator, CancellationTokenSource)
+            return _container.Resolve<IAutofacTestRunnerFactory>().Create(_container, test, MessageBus, testClass, null, testMethod, null, "", Aggregator, CancellationTokenSource)
                 .RunAsync();
         }
 

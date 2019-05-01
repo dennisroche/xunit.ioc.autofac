@@ -17,12 +17,12 @@ namespace Xunit.Ioc.Autofac.TestFramework
 
         protected override ITestFrameworkDiscoverer CreateDiscoverer()
         {
-            return new AutofacTestFrameworkDiscoverer(AssemblyInfo, SourceInformationProvider, DiagnosticMessageSink);
+            return _container.Resolve<IAutofacTestFrameworkDiscovererFactory>().Create(AssemblyInfo, _container, SourceInformationProvider, DiagnosticMessageSink);
         }
 
         protected override async void RunTestCases(IEnumerable<AutofacTestCase> testCases, IMessageSink executionMessageSink, ITestFrameworkExecutionOptions executionOptions)
         {
-            using (var assemblyRunner = new AutofacTestAssemblyRunner(_container, _testAssembly, testCases, DiagnosticMessageSink, executionMessageSink, executionOptions))
+            using (var assemblyRunner = _container.Resolve<IAutofacTestAssemblyRunnerFactory>().Create(_container, _testAssembly, testCases, DiagnosticMessageSink, executionMessageSink, executionOptions))
             {
                 await assemblyRunner.RunAsync();
             }
