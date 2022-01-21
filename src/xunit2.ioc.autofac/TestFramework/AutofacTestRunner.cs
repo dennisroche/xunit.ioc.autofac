@@ -18,7 +18,7 @@ namespace Xunit.Ioc.Autofac.TestFramework
 
         protected override async Task<Tuple<decimal, string>> InvokeTestAsync(ExceptionAggregator aggregator)
         {
-            var invoker = new AutofacTestInvoker(_container, Test, MessageBus, TestClass, null, TestMethod, null, aggregator, CancellationTokenSource);
+            var invoker = _container.Resolve<IAutofacTestInvokerFactory>().Create(_container, Test, MessageBus, TestClass, null, TestMethod, null, aggregator, CancellationTokenSource);
             var duration = await invoker.RunAsync();
 
             return Tuple.Create(duration, invoker.Output);

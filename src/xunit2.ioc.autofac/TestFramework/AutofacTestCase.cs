@@ -15,7 +15,7 @@ namespace Xunit.Ioc.Autofac.TestFramework
 
         public Task<RunSummary> RunAsync(IContainer container, IMessageSink diagnosticMessageSink, IMessageBus messageBus, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource)
         {
-            return new AutofacTestCaseRunner(this, container, messageBus, aggregator, cancellationTokenSource, DisplayName)
+            return container.Resolve< IAutofacTestCaseRunnerFactory>().Create(this, container, messageBus, aggregator, cancellationTokenSource, DisplayName)
                 .RunAsync();
         }
     }
